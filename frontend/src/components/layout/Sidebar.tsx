@@ -136,6 +136,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false })
 
   const financeItems: NavItem[] = [
     { label: 'Invoice Dashboard', path: '/invoice-dashboard', icon: <Receipt size={18} />, roles: ['admin', 'finance', 'procurement_manager', 'auditor', 'vendor'] },
+    { label: 'Invoices', path: '/invoices', icon: <FileText size={18} />, roles: ['admin', 'finance', 'procurement_manager', 'auditor', 'vendor'] },
     { label: 'Purchases', path: '/purchases', icon: <Wallet size={18} />, roles: ['admin', 'finance'] },
     { label: 'Customers', path: '/customers', icon: <UserCircle size={18} />, roles: ['admin', 'finance'] },
     { label: 'Payments', path: '/payments', icon: <CreditCard size={18} />, roles: ['admin', 'finance', 'auditor'] },
@@ -259,7 +260,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false })
 
       {/* Desktop sidebar */}
       <aside
-        className={`hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:flex-col transition-[width] duration-300 ${collapsed ? 'lg:w-16' : 'lg:w-64'}`}
+        className={`hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:flex-col lg:z-20 transition-[width] duration-300 ${collapsed ? 'lg:w-16' : 'lg:w-64'}`}
         style={sidebarStyle}
       >
         <SidebarContent collapsed={collapsed} />

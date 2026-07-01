@@ -18,6 +18,9 @@ export const bootstrapApp = async (): Promise<import('express').Express> => {
 
     app.use('/api', (await import('./index')).default);
 
+    const { seedDemoData } = await import('./seed');
+    await seedDemoData();
+
     return app;
   } catch (error) {
     logger.error('Failed to bootstrap procurement service', error);
