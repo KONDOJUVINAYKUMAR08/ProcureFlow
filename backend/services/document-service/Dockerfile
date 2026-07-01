@@ -39,7 +39,7 @@ COPY --chown=app:app --from=builder /app/package.json ./
 COPY --chown=app:app --from=builder /app/backend/shared ./backend/shared
 COPY --chown=app:app --from=builder /app/backend/services/document-service ./backend/services/document-service
 
-RUN mkdir -p logs && chown app:app logs
+RUN mkdir -p logs /data && chown app:app logs /data
 EXPOSE 5004
 USER app
 
