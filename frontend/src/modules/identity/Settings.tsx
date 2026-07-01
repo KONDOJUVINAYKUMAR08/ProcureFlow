@@ -279,7 +279,6 @@ const IssuerProfilesSection: React.FC = () => {
   React.useEffect(() => {
     setForm(existing ? { ...emptyProfile(activeTab), ...existing } : emptyProfile(activeTab));
     setSuccess('');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, profiles]);
 
   const mutation = useMutation({
