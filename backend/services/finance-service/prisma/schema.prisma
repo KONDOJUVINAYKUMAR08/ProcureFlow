@@ -1,0 +1,283 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["finance"]
+}
+
+enum InvoiceType {
+  CUSTOMER_INVOICE
+  VENDOR_INVOICE
+
+  @@schema("finance")
+}
+
+enum InvoiceTemplateType {
+  individual
+  beulix
+
+  @@schema("finance")
+}
+
+enum TaxType {
+  intra_state
+  inter_state
+
+  @@schema("finance")
+}
+
+enum InvoiceStatus {
+  draft
+  pending
+  approved
+  paid
+  overdue
+  disputed
+  cancelled
+
+  @@schema("finance")
+}
+
+// Line items are stored as Jsonb (array of { description, hsnSacCode, quantity,
+// unit, rate, discount, taxableAmount, gstPercentage, cgstAmount, sgstAmount,
+// igstAmount, totalAmount }) — matches the shape computeTotals() already
+// produces, so that function's logic is unchanged by this migration.
+model Invoice {
+  id             String              @id @default(uuid())
+  invoiceNumber  String              @unique
+  invoiceType    InvoiceType         @default(VENDOR_INVOICE)
+  templateType   InvoiceTemplateType @default(beulix)
+
+  vendorId       String?
+  customerId     String?
+  partyName      String
+  partyGstin     String?
+  partyPan       String?
+  partyAddress   String?
+
+  purchaseOrderId String?
+  contractId      String?
+  poNumber        String?
+
+  issueDate      DateTime            @default(now())
+  dueDate        DateTime
+
+  placeOfSupply  String?
+  taxType        TaxType             @default(intra_state)
+
+  // Individual/trainer-template-only fields
+  courseActivityName String?
+  classroomLocation  String?
+  modeOfLecture      String?
+  contactPerson      String?
+  contactNumber      String?
+
+  lineItems      Json                @default("[]")
+
+  subTotal       Float               @default(0)
+  totalCgst      Float               @default(0)
+  totalSgst      Float               @default(0)
+  totalIgst      Float               @default(0)
+  totalGst       Float               @default(0)
+  gstPercentage  Float?
+
+  tdsPercentage  Float               @default(0)
+  tdsAmount      Float               @default(0)
+
+  grossAmount       Float            @default(0)
+  companyReceivable Float            @default(0)
+  vendorPayable     Float            @default(0)
+  totalAmount       Float            @default(0)
+
+  amountInWords  String?
+
+  bankName       String?
+  accountNumber  String?
+  ifscCode       String?
+  accountHolder  String?
+  upiId          String?
+
+  vendor         String?
+  amount         Float               @default(0)
+  tax            Float               @default(0)
+
+  status         InvoiceStatus       @default(pending)
+  approvedBy     String?
+  approvedAt     DateTime?
+  paymentDate    DateTime?
+  paymentMethod  String?
+
+  pdfUrl         String?
+  pdfKey         String?
+
+  description    String              @default("")
+  notes          String              @default("")
+  termsAndConditions String?
+
+  createdBy      String
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([invoiceType])
+  @@index([status])
+  @@index([createdBy])
+  @@map("invoices")
+  @@schema("finance")
+}
+
+enum PaymentMethod {
+  wire_transfer
+  check
+  ach
+  credit_card
+
+  @@schema("finance")
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  reversed
+
+  @@schema("finance")
+}
+
+model Payment {
+  id               String        @id @default(uuid())
+  paymentReference String        @unique
+  invoice          String
+  vendor           String
+  amount           Float
+  paymentMethod    PaymentMethod
+  paymentDate      DateTime      @default(now())
+  status           PaymentStatus @default(completed)
+  notes            String        @default("")
+  processedBy      String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([invoice])
+  @@index([vendor])
+  @@index([status])
+  @@map("payments")
+  @@schema("finance")
+}
+
+enum CustomerStatus {
+  active
+  inactive
+
+  @@schema("finance")
+}
+
+enum TaxPreference {
+  taxable
+  tax_exempt
+
+  @@schema("finance")
+}
+
+model Customer {
+  id              String         @id @default(uuid())
+  customerCode    String         @unique
+  companyName     String
+  contactPerson   String
+  email           String
+  phone           String
+  gstin           String?
+  pan             String?
+  address         Json           @default("{}")
+  billingAddress  Json?
+  paymentTerms    String         @default("Net 30")
+  creditLimit     Float?
+  status          CustomerStatus @default(active)
+  notes           String         @default("")
+  website         String?
+  industry        String?
+
+  // Customer Registration field extension (Phase 7)
+  currency        String         @default("INR")
+  language        String         @default("English")
+  gstTreatment    String?
+  placeOfSupply   String?
+  taxPreference   TaxPreference  @default(taxable)
+  portalEnabled   Boolean        @default(false)
+  documentUrl     String?
+
+  createdBy       String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@map("customers")
+  @@schema("finance")
+}
+
+// Vendor-invoice ledger (Phase 6) — distinct from procurement-service's
+// Purchase Order workflow. TDS defaults to a flat 10% of taxable amount.
+model Purchase {
+  id                   String    @id @default(uuid())
+  registeredCustomerId String?
+  supplierName         String
+  supplierGstin        String?
+  billedTo             String?
+  customerGstin        String?
+  hsnSac               String?
+  invoiceNumber        String
+  purchaseDate         DateTime  @default(now())
+  taxableAmount         Float
+  cgst                 Float     @default(0)
+  sgst                 Float     @default(0)
+  igst                 Float     @default(0)
+  invoiceValue         Float     @default(0)
+  description          String    @default("")
+  tdsPercentage        Float     @default(10)
+  tdsAmount            Float     @default(0)
+
+  createdBy            String
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([purchaseDate])
+  @@map("purchases")
+  @@schema("finance")
+}
+
+enum IssuerProfileType {
+  individual
+  beulix
+
+  @@schema("finance")
+}
+
+// Fixed letterhead/bank/signature data for each invoice template (Phase 5),
+// configured once by the admin rather than re-entered per invoice.
+model IssuerProfile {
+  id            String            @id @default(uuid())
+  type          IssuerProfileType @unique
+  name          String
+  contactPerson String?
+  email         String?
+  contact       String?
+  address       String?
+  pan           String?
+  gst           String?
+  bankName      String?
+  accountNumber String?
+  ifscCode      String?
+  termsAndConditions String?
+  signatureUrl  String?
+  logoUrl       String?
+
+  updatedAt     DateTime          @updatedAt
+
+  @@map("issuer_profiles")
+  @@schema("finance")
+}

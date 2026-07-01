@@ -1,0 +1,52 @@
+{
+  "name": "procurement-platform-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend/shared/*",
+    "backend/services/*",
+    "frontend"
+  ],
+  "scripts": {
+    "bootstrap": "npm install",
+    "dev:identity": "npm run dev -w @procurement/identity-service",
+    "dev:finance": "npm run dev -w @procurement/finance-service",
+    "dev:procurement": "npm run dev -w @procurement/procurement-service",
+    "dev:document": "npm run dev -w @procurement/document-service",
+    "dev:backend": "concurrently \"npm run dev:identity\" \"npm run dev:finance\" \"npm run dev:procurement\" \"npm run dev:document\"",
+    "dev:frontend": "npm run start -w frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build:backend": "npm run build -w @procurement/types && npm run build -w @procurement/common && npm run build -w @procurement/utils && npm run build -w @procurement/middleware && npm run build -w @procurement/identity-service && npm run build -w @procurement/procurement-service && npm run build -w @procurement/finance-service && npm run build -w @procurement/document-service",
+    "build:frontend": "npm run build -w frontend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "clean:backend": "npm run clean -w @procurement/types && npm run clean -w @procurement/common && npm run clean -w @procurement/utils && npm run clean -w @procurement/middleware && npm run clean -w @procurement/identity-service && npm run clean -w @procurement/procurement-service && npm run clean -w @procurement/finance-service && npm run clean -w @procurement/document-service",
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.25",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^10.0.0",
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^4.18.2",
+    "joi": "^18.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "uuid": "^11.0.0",
+    "winston": "^3.19.0"
+  },
+  "overrides": {
+    "cross-spawn": ">=7.0.5",
+    "glob": ">=11.1.0",
+    "minimatch": ">=9.0.7",
+    "tar": ">=7.5.11"
+  }
+}

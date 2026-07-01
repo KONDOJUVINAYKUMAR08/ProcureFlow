@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["procurement"]
+}
+
+enum VendorStatus {
+  active
+  inactive
+  pending
+  blacklisted
+
+  @@schema("procurement")
+}
+
+// address: Jsonb { street, city, state, country, zipCode }
+// activities: Jsonb array of { action, description, performedBy, timestamp }
+model Vendor {
+  id            String       @id @default(uuid())
+  vendorName    String
+  vendorCode    String       @unique
+  contactPerson String
+  email         String
+  phone         String
+  address       Json         @default("{}")
+  taxId         String
+  bankAccount   String
+  status        VendorStatus @default(pending)
+  rating        Float        @default(0)
+  notes         String       @default("")
+  activities    Json         @default("[]")
+  createdBy     String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([email])
+  @@map("vendors")
+  @@schema("procurement")
+}
+
+enum POStatus {
+  draft
+  issued
+  acknowledged
+  shipped
+  completed
+  cancelled
+
+  @@schema("procurement")
+}
+
+// items: Jsonb array of { name, description, quantity, unitPrice, totalPrice }
+model PurchaseOrder {
+  id                  String   @id @default(uuid())
+  poNumber            String   @unique
+  vendor              String
+  purchaseRequest     String?
+  items               Json     @default("[]")
+  subtotal            Float
+  tax                 Float    @default(0)
+  totalAmount         Float
+  status              POStatus @default(draft)
+  orderDate           DateTime @default(now())
+  expectedDeliveryDate DateTime?
+  notes               String   @default("")
+  createdBy           String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([vendor])
+  @@index([status])
+  @@map("purchase_orders")
+  @@schema("procurement")
+}
+
+enum PRStatus {
+  draft
+  pending
+  approved
+  rejected
+
+  @@schema("procurement")
+}
+
+enum PRPriority {
+  low
+  medium
+  high
+  urgent
+
+  @@schema("procurement")
+}
+
+// items: Jsonb array of { name, description, quantity, unitPrice }
+model PurchaseRequest {
+  id               String     @id @default(uuid())
+  title            String
+  department       String
+  priority         PRPriority @default(medium)
+  description      String
+  estimatedCost    Float
+  vendor           String?
+  status           PRStatus   @default(draft)
+  requestedBy      String
+  approvedBy       String?
+  rejectionReason  String?
+  items            Json       @default("[]")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([vendor])
+  @@index([status])
+  @@index([requestedBy])
+  @@map("purchase_requests")
+  @@schema("procurement")
+}
+
+enum ContractStatus {
+  active
+  expired
+  terminated
+  pending_renewal
+
+  @@schema("procurement")
+}
+
+// versions: Jsonb array of { version, documentUrl, uploadedAt, uploadedBy }
+model Contract {
+  id              String         @id @default(uuid())
+  contractName    String
+  vendor          String
+  contractNumber  String         @unique
+  effectiveDate   DateTime
+  expiryDate      DateTime
+  contractValue   Float
+  status          ContractStatus @default(active)
+  description     String         @default("")
+  documentUrl     String?
+  versions        Json           @default("[]")
+  createdBy       String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([vendor])
+  @@index([status])
+  @@map("contracts")
+  @@schema("procurement")
+}

@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["document"]
+}
+
+// Every service writes audit entries directly to the document schema's
+// audit_logs table (mirrors document-service's own AuditLog model — see
+// backend/services/document-service/prisma/schema.prisma, which owns the
+// migration history for this table). This mini schema only exists so the
+// shared `auditLog`/`createAuditLog` middleware has its own Prisma Client,
+// since each service's generated client only knows the models it migrates.
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  details   Json     @default("{}")
+  ipAddress String
+  userAgent String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([entity])
+  @@map("audit_logs")
+  @@schema("document")
+}

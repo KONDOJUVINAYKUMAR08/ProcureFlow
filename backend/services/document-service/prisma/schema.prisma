@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["document"]
+}
+
+enum DocumentCategory {
+  contract
+  invoice
+  purchase_order
+  vendor_certificate
+
+  @@schema("document")
+}
+
+// storageKey/storageRoot replace the old s3Key/s3Bucket — same key layout
+// (e.g. "contracts/{uuid}.pdf"), now resolved against a local upload root
+// instead of an S3 bucket.
+model Document {
+  id           String           @id @default(uuid())
+  fileName     String
+  originalName String
+  mimeType     String
+  size         Int
+  storageKey   String
+  category     DocumentCategory
+  relatedId    String?
+  uploadedBy   String
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([category])
+  @@index([relatedId])
+  @@map("documents")
+  @@schema("document")
+}
+
+enum NotificationType {
+  contract_expiry
+  invoice_due
+  vendor_approval
+  purchase_approval
+  system
+
+  @@schema("document")
+}
+
+model Notification {
+  id           String           @id @default(uuid())
+  title        String
+  message      String
+  type         NotificationType
+  userId       String?
+  isRead       Boolean          @default(false)
+  relatedId    String?
+  relatedModel String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([userId])
+  @@map("notifications")
+  @@schema("document")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  details   Json     @default("{}")
+  ipAddress String
+  userAgent String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([entity])
+  @@map("audit_logs")
+  @@schema("document")
+}

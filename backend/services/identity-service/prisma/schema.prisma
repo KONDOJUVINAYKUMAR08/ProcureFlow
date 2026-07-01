@@ -1,0 +1,267 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["identity"]
+}
+
+enum UserRole {
+  admin
+  procurement_manager
+  finance
+  vendor
+  auditor
+  employee
+
+  @@schema("identity")
+}
+
+model User {
+  id                   String    @id @default(uuid())
+  email                String    @unique
+  password             String
+  firstName            String
+  lastName             String
+  role                 UserRole  @default(procurement_manager)
+  department           String    @default("General")
+  isActive             Boolean   @default(true)
+  vendorId             String?
+  mustChangePassword   Boolean   @default(false)
+  lastLogin            DateTime?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@map("users")
+  @@schema("identity")
+}
+
+enum EmploymentType {
+  full_time
+  part_time
+  contract
+  intern
+
+  @@schema("identity")
+}
+
+enum EmployeeStatus {
+  active
+  inactive
+  resigned
+  terminated
+
+  @@schema("identity")
+}
+
+enum Gender {
+  male
+  female
+  other
+
+  @@schema("identity")
+}
+
+model Employee {
+  id                   String         @id @default(uuid())
+  employeeId           String         @unique
+  firstName            String
+  lastName             String
+  email                String
+  phone                String
+  department           String
+  designation          String
+  employmentType       EmploymentType @default(full_time)
+  joiningDate          DateTime
+  leavingDate          DateTime?
+  status               EmployeeStatus @default(active)
+
+  basicSalary          Float          @default(0)
+  hra                  Float          @default(0)
+  transportAllowance   Float          @default(0)
+  otherAllowances      Float          @default(0)
+  grossSalary          Float          @default(0)
+
+  pan                  String?
+  aadhar               String?
+  uan                  String?
+  esicNumber           String?
+
+  bankName             String?
+  accountNumber        String?
+  ifscCode             String?
+  accountHolder        String?
+
+  reportingManagerId   String?
+  reportingManagerName String?
+
+  dateOfBirth          DateTime?
+  gender               Gender?
+  address              String?
+  emergencyContact     String?
+
+  profilePhotoUrl      String?
+  offerLetterUrl       String?
+  idProofUrl           String?
+
+  createdBy            String
+  createdAt            DateTime       @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  @@map("employees")
+  @@schema("identity")
+}
+
+enum PayslipStatus {
+  draft
+  generated
+  paid
+
+  @@schema("identity")
+}
+
+model Payslip {
+  id                 String        @id @default(uuid())
+  payslipNumber      String        @unique
+  employeeId         String
+  employeeName       String
+  designation        String        @default("")
+  department         String        @default("")
+  month              Int
+  year               Int
+  payPeriod          String
+  workingDays        Int           @default(26)
+  presentDays        Int           @default(0)
+  leaveDays          Int           @default(0)
+  lopDays            Int           @default(0)
+
+  basicSalary        Float         @default(0)
+  hra                Float         @default(0)
+  transportAllowance Float         @default(0)
+  otherAllowances    Float         @default(0)
+  arrears            Float         @default(0)
+  grossEarnings      Float         @default(0)
+
+  pfEmployee         Float         @default(0)
+  pfEmployer         Float         @default(0)
+  esicEmployee       Float         @default(0)
+  esicEmployer       Float         @default(0)
+  tds                Float         @default(0)
+  lop                Float         @default(0)
+  otherDeductions    Float         @default(0)
+  totalDeductions    Float         @default(0)
+
+  netSalary          Float         @default(0)
+  amountInWords      String        @default("")
+
+  bankName           String?
+  accountNumber      String?
+
+  status             PayslipStatus @default(generated)
+  paidDate           DateTime?
+  pdfUrl             String?
+  pdfKey             String?
+
+  generatedBy        String
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@index([employeeId])
+  @@map("payslips")
+  @@schema("identity")
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  half_day
+  wfh
+  leave
+  holiday
+
+  @@schema("identity")
+}
+
+model Attendance {
+  id               String           @id @default(uuid())
+  employeeId       String
+  employeeName     String
+  date             String
+  checkInTime      DateTime?
+  checkOutTime     DateTime?
+  checkInPhotoUrl  String?
+  checkInPhotoKey  String?
+  checkInLatitude  Float?
+  checkInLongitude Float?
+  checkInAddress   String?
+  status           AttendanceStatus @default(present)
+  workingHours     Float?
+  notes            String?
+  markedBy         String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([employeeId])
+  @@index([date])
+  @@map("attendance")
+  @@schema("identity")
+}
+
+enum LetterType {
+  offer
+  experience
+  relieving
+  internship_certificate
+
+  @@schema("identity")
+}
+
+enum LetterStatus {
+  draft
+  issued
+
+  @@schema("identity")
+}
+
+model Letter {
+  id                   String       @id @default(uuid())
+  letterNumber         String       @unique
+  letterType           LetterType
+  employeeId           String?
+  employeeName         String
+  designation          String
+  department           String?
+
+  ctcAnnual            Float?
+  joiningDate          DateTime?
+
+  joiningDateActual    DateTime?
+  lastWorkingDate      DateTime?
+
+  internProject        String?
+  internDurationMonths Int?
+  internFromDate       DateTime?
+  internToDate         DateTime?
+  internPerformance    String?
+  mentorName           String?
+
+  issuedDate           DateTime     @default(now())
+  issuedBy             String
+  status               LetterStatus @default(issued)
+  pdfUrl               String?
+  pdfKey               String?
+  notes                String?
+
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  @@index([employeeId])
+  @@map("letters")
+  @@schema("identity")
+}

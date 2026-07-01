@@ -1,0 +1,107 @@
+# True microservices: each backend service runs as its own container (its own
+# Dockerfile, non-root), each owning its own Postgres schema. The frontend's
+# nginx path-routes /api/* to the right service — there is NO custom API
+# gateway. Everything needed to run this app lives in this one compose file —
+# no AWS account, no AWS CLI, no cloud credentials of any kind.
+
+x-backend-env: &backend-env
+  NODE_ENV: ${NODE_ENV:-production}
+  DATABASE_URL: ${DATABASE_URL:-postgresql://procureflow:procureflow@postgres:5432/procureflow}
+  JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_in_production_12345}
+  JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev_jwt_refresh_secret_change_in_production_12345}
+  JWT_EXPIRY: 15m
+  JWT_REFRESH_EXPIRY: 7d
+  CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
+  ENCRYPTION_KEY: ${ENCRYPTION_KEY:-dev_encryption_key_change_in_production_32b}
+  SENDGRID_API_KEY: ${SENDGRID_API_KEY:-}
+  SENDGRID_FROM: ${SENDGRID_FROM:-noreply@procureflow.com}
+  UPLOADS_DIR: /data
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: procurement-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-procureflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-procureflow}
+      POSTGRES_DB: ${POSTGRES_DB:-procureflow}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-procureflow}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  identity:
+    build: { context: ., dockerfile: backend/services/identity-service/Dockerfile }
+    container_name: procurement-identity
+    environment:
+      <<: *backend-env
+      PORT: 5001
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@procureflow.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme123}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+    volumes:
+      - uploads_data:/data
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+
+  finance:
+    build: { context: ., dockerfile: backend/services/finance-service/Dockerfile }
+    container_name: procurement-finance
+    environment:
+      <<: *backend-env
+      PORT: 5002
+      IDENTITY_SERVICE_URL: http://identity:5001
+    volumes:
+      - uploads_data:/data
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+
+  procurement:
+    build: { context: ., dockerfile: backend/services/procurement-service/Dockerfile }
+    container_name: procurement-procurement
+    environment:
+      <<: *backend-env
+      PORT: 5003
+    volumes:
+      - uploads_data:/data
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+
+  document:
+    build: { context: ., dockerfile: backend/services/document-service/Dockerfile }
+    container_name: procurement-document
+    environment:
+      <<: *backend-env
+      PORT: 5004
+    volumes:
+      - uploads_data:/data
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: unless-stopped
+
+  frontend:
+    build: { context: ./frontend, dockerfile: Dockerfile }
+    container_name: procurement-frontend
+    ports:
+      - '80:8080'
+    depends_on: [identity, finance, procurement, document]
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  uploads_data:
+
+# Notes:
+# - There is exactly one admin account, seeded on identity-service startup from
+#   ADMIN_EMAIL/ADMIN_PASSWORD if no admin exists yet. There is no public
+#   registration endpoint; the admin creates any further (restricted-role)
+#   accounts from the Users screen.
+# - PDFs and uploaded documents live on the `uploads_data` volume, shared
+#   across the services that read/write them, with file metadata in Postgres.

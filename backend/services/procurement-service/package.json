@@ -1,0 +1,33 @@
+{
+  "name": "@procurement/procurement-service",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "prisma generate && tsc",
+    "clean": "rimraf dist",
+    "dev": "prisma generate && ts-node src/server.ts",
+    "start": "node dist/server.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy"
+  },
+  "dependencies": {
+    "@procurement/types": "*",
+    "@procurement/common": "*",
+    "@procurement/middleware": "*",
+    "@procurement/utils": "*",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "@prisma/client": "^5.20.0",
+    "prisma": "^5.20.0",
+    "uuid": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.3",
+    "rimraf": "^5.0.5"
+  }
+}
