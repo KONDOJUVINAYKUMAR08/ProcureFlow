@@ -98,7 +98,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
           <Bell size={18} />
           {unreadCount > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 text-[10px] font-bold rounded-full flex items-center justify-center keep-white"
-              style={{ background: 'linear-gradient(135deg,#f97316,#fbbf24)', color: '#fff' }}>
+              style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', color: '#fff' }}>
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
@@ -110,7 +110,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
         <div className="flex items-center gap-3">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium keep-white"
-            style={{ background: 'linear-gradient(135deg,#f97316,#fbbf24)', color: '#fff' }}
+            style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', color: '#fff' }}
           >
             {user?.firstName?.[0]}{user?.lastName?.[0]}
           </div>
