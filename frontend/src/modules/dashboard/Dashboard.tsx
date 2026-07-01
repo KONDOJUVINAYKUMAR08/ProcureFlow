@@ -13,8 +13,6 @@ import {
   PieChart, Pie, Cell, AreaChart, Area,
 } from 'recharts';
 
-const CHART_COLORS = ['#f97316', '#fbbf24', '#22d3ee', '#10b981', '#ef4444'];
-
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
@@ -29,8 +27,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const Dashboard: React.FC = () => {
   const { theme } = useTheme();
-  const gridStroke = theme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
-  const axisStroke = theme === 'light' ? '#94a3b8' : '#64748b';
+  const isDark = theme === 'dark';
+  const gridStroke = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const axisStroke = isDark ? '#64748b' : '#94a3b8';
+  // Chart palette — violet/cyan/green/pink in dark; sunset orange/amber in light
+  const CHART_COLORS = isDark
+    ? ['#818cf8', '#22d3ee', '#34d399', '#f472b6', '#a78bfa']
+    : ['#f97316', '#fbbf24', '#22d3ee', '#10b981', '#ef4444'];
+  const chartPrimary  = isDark ? '#818cf8' : '#f97316';
+  const gradientStart = isDark ? '#818cf8' : '#f97316';
+  const gradientEnd   = isDark ? '#a78bfa' : '#fbbf24';
 
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard'],
@@ -131,15 +137,15 @@ const Dashboard: React.FC = () => {
                 <AreaChart data={monthlySpendData}>
                   <defs>
                     <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
+                      <stop offset="5%" stopColor={gradientStart} stopOpacity={0.3} />
+                      <stop offset="95%" stopColor={gradientEnd} stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                   <XAxis dataKey="name" stroke={axisStroke} fontSize={12} />
                   <YAxis stroke={axisStroke} fontSize={12} tickFormatter={(v) => `₹${(v/1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="amount" stroke="#f97316" strokeWidth={2} fill="url(#colorAmount)" />
+                  <Area type="monotone" dataKey="amount" stroke={chartPrimary} strokeWidth={2} fill="url(#colorAmount)" />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -214,7 +220,7 @@ const Dashboard: React.FC = () => {
                   <XAxis dataKey="name" stroke={axisStroke} fontSize={12} />
                   <YAxis stroke={axisStroke} fontSize={12} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="cost" fill="#f97316" radius={[4, 4, 0, 0]} opacity={0.85} />
+                  <Bar dataKey="cost" fill={chartPrimary} radius={[4, 4, 0, 0]} opacity={0.85} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

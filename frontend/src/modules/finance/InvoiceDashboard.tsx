@@ -17,7 +17,7 @@ import {
 import InvoiceForm from './InvoiceForm';
 import InvoiceDetailModal from './InvoiceDetailModal';
 
-const COLORS = ['#f97316', '#fbbf24', '#22d3ee', '#10b981', '#ef4444', '#a855f7'];
+// COLORS is now theme-split inside the component
 
 const KpiCard: React.FC<{
   label: string; value: string | number; sub?: string;
@@ -61,8 +61,15 @@ const InvoiceDashboard: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { theme } = useTheme();
-  const gridStroke = theme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
-  const axisStroke = theme === 'light' ? '#94a3b8' : '#64748b';
+  const isDark = theme === 'dark';
+  const gridStroke = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+  const axisStroke = isDark ? '#64748b' : '#94a3b8';
+  const COLORS = isDark
+    ? ['#818cf8', '#22d3ee', '#34d399', '#f472b6', '#fb923c', '#a78bfa']
+    : ['#f97316', '#fbbf24', '#22d3ee', '#10b981', '#ef4444', '#a855f7'];
+  const revenuePrimary  = isDark ? '#818cf8' : '#f97316';
+  const gradientStart   = isDark ? '#818cf8' : '#f97316';
+  const gradientEnd     = isDark ? '#a78bfa' : '#fbbf24';
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -200,8 +207,8 @@ const InvoiceDashboard: React.FC = () => {
                 <AreaChart data={monthlyData}>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
+                      <stop offset="5%" stopColor={gradientStart} stopOpacity={0.3} />
+                      <stop offset="95%" stopColor={gradientEnd} stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorGst" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.3} />
@@ -213,7 +220,7 @@ const InvoiceDashboard: React.FC = () => {
                   <YAxis stroke={axisStroke} fontSize={11} tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#f97316" fill="url(#colorRevenue)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="revenue" name="Revenue" stroke={revenuePrimary} fill="url(#colorRevenue)" strokeWidth={2} />
                   <Area type="monotone" dataKey="gst" name="GST" stroke="#22d3ee" fill="url(#colorGst)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>

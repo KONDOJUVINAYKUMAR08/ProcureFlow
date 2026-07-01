@@ -7,24 +7,24 @@
 /* ── Theme CSS Variables ─────────────────────────────────────────────────── */
 /* :root = dark (default). html.light overrides to light palette.            */
 :root {
-  --page-bg:          #000000;
-  --fg:               rgba(255,255,255,1);
-  --fg-muted:         rgba(163,163,163,1);
-  --fg-faint:         rgba(115,115,115,1);
-  --glass-bg:         rgba(255,255,255,0.04);
-  --glass-border:     rgba(255,255,255,0.06);
-  --glass-hover:      rgba(255,255,255,0.07);
-  --input-bg:         rgba(0,0,0,0.5);
-  --input-border:     rgba(255,255,255,0.1);
+  --page-bg:          #0a0a0f;
+  --fg:               rgba(255,255,255,0.95);
+  --fg-muted:         rgba(160,163,190,1);
+  --fg-faint:         rgba(100,104,132,1);
+  --glass-bg:         rgba(255,255,255,0.06);
+  --glass-border:     rgba(255,255,255,0.09);
+  --glass-hover:      rgba(255,255,255,0.10);
+  --input-bg:         rgba(255,255,255,0.05);
+  --input-border:     rgba(255,255,255,0.12);
   --input-focus:      rgba(249,115,22,0.65);
-  --surface:          rgba(17,17,17,0.9);
-  --sidebar-bg:       rgba(0,0,0,0.85);
-  --header-bg:        rgba(0,0,0,0.8);
-  --scrollbar-track:  #000000;
-  --scrollbar-thumb:  #262626;
-  --orb-1:            rgba(99,102,241,0.18);
-  --orb-2:            rgba(168,85,247,0.15);
-  --orb-3:            rgba(59,130,246,0.12);
+  --surface:          rgba(22,22,32,0.96);
+  --sidebar-bg:       rgba(10,10,18,0.92);
+  --header-bg:        rgba(10,10,18,0.88);
+  --scrollbar-track:  #0a0a0f;
+  --scrollbar-thumb:  #2a2a3a;
+  --orb-1:            rgba(99,102,241,0.20);
+  --orb-2:            rgba(168,85,247,0.16);
+  --orb-3:            rgba(59,130,246,0.13);
 }
 
 html.light {
@@ -88,13 +88,14 @@ html.light .tab-active-dark { background: linear-gradient(135deg,#f97316,#fbbf24
 /* ── Components ───────────────────────────────────────────────────────────── */
 @layer components {
 
-  /* Glass Card — Apple-style frosted glass with saturate boost */
+  /* Glass Card — Apple/Android style frosted panel */
   .glass-card {
     background-color: var(--glass-bg);
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
-    border-radius: 0.75rem;
+    border-radius: 0.875rem;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 4px 16px rgba(0,0,0,0.18);
   }
 
   .glass-card-hover {
@@ -102,13 +103,14 @@ html.light .tab-active-dark { background: linear-gradient(135deg,#f97316,#fbbf24
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
-    border-radius: 0.75rem;
+    border-radius: 0.875rem;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.06) inset, 0 4px 16px rgba(0,0,0,0.18);
     transition: all 0.3s;
   }
   .glass-card-hover:hover {
     background-color: var(--glass-hover);
     border-color: var(--input-focus);
-    box-shadow: 0 8px 32px rgba(249,115,22,0.08);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 8px 32px rgba(249,115,22,0.10);
   }
 
   .glow-effect { box-shadow: 0 0 40px -10px rgba(99,102,241,0.15); }
