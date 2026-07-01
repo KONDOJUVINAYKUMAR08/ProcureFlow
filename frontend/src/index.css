@@ -22,9 +22,9 @@
   --header-bg:        rgba(0,0,0,0.8);
   --scrollbar-track:  #000000;
   --scrollbar-thumb:  #262626;
-  --orb-1:            rgba(249,115,22,0.18);
-  --orb-2:            rgba(251,191,36,0.14);
-  --orb-3:            rgba(234,88,12,0.12);
+  --orb-1:            rgba(99,102,241,0.18);
+  --orb-2:            rgba(168,85,247,0.15);
+  --orb-3:            rgba(59,130,246,0.12);
 }
 
 html.light {
@@ -43,9 +43,9 @@ html.light {
   --header-bg:        rgba(242,242,247,0.82);
   --scrollbar-track:  #f2f2f7;
   --scrollbar-thumb:  #c7c7cc;
-  --orb-1:            rgba(249,115,22,0.14);
-  --orb-2:            rgba(251,191,36,0.10);
-  --orb-3:            rgba(234,88,12,0.09);
+  --orb-1:            rgba(99,102,241,0.12);
+  --orb-2:            rgba(236,72,153,0.09);
+  --orb-3:            rgba(59,130,246,0.08);
 }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
@@ -205,6 +205,19 @@ html.light .tab-active-dark { background: linear-gradient(135deg,#f97316,#fbbf24
   .badge-issued    { @apply badge bg-blue-400/10 text-blue-500; }
   .badge-shipped   { @apply badge bg-purple-400/10 text-purple-500; }
   .badge-cancelled { @apply badge bg-red-400/10 text-red-500; }
+
+  /* Sidebar nav item — water-drop hover (transparent glass center, white border) */
+  .nav-item {
+    transition: background 0.18s, box-shadow 0.18s;
+  }
+  .nav-item:not(.nav-active):hover {
+    background: rgba(255,255,255,0.04) !important;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.16), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  html.light .nav-item:not(.nav-active):hover {
+    background: rgba(255,255,255,0.62) !important;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1), 0 2px 8px rgba(0,0,0,0.05);
+  }
 
   /* Table */
   .table-row {

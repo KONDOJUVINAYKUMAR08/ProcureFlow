@@ -53,14 +53,12 @@ const NavItemComponent: React.FC<{ item: NavItem; onClose: () => void; depth?: n
         <button
           onClick={() => setExpanded(!expanded)}
           title={collapsed ? item.label : undefined}
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${collapsed ? 'justify-center' : ''}`}
+          className={`nav-item w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium ${expanded ? 'nav-active' : ''} ${collapsed ? 'justify-center' : ''}`}
           style={{
             color: expanded ? 'var(--fg)' : 'var(--fg-muted)',
-            backgroundColor: expanded ? 'var(--glass-bg)' : 'transparent',
+            background: expanded ? 'var(--glass-bg)' : 'transparent',
             paddingLeft: !collapsed && depth > 0 ? `${depth * 12 + 12}px` : undefined,
           }}
-          onMouseEnter={e => { if (!expanded) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--glass-bg)'; }}
-          onMouseLeave={e => { if (!expanded) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'; }}
         >
           <span style={{ color: expanded ? 'var(--fg)' : 'var(--fg-faint)' }} className="shrink-0">
             {item.icon}
@@ -88,20 +86,14 @@ const NavItemComponent: React.FC<{ item: NavItem; onClose: () => void; depth?: n
       to={item.path}
       onClick={onClose}
       title={collapsed ? item.label : undefined}
-      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${collapsed ? 'justify-center' : ''}`}
+      className={({ isActive: active }) =>
+        `nav-item flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium ${active ? 'nav-active' : ''} ${collapsed ? 'justify-center' : ''}`
+      }
       style={({ isActive: active }) => ({
         background: active ? 'linear-gradient(135deg,#f97316,#fbbf24)' : 'transparent',
         color: active ? '#ffffff' : 'var(--fg-muted)',
         paddingLeft: !collapsed && depth > 0 ? `${depth * 12 + 12}px` : undefined,
       })}
-      onMouseEnter={e => {
-        const el = e.currentTarget as HTMLElement;
-        if (!isActive) el.style.backgroundColor = 'var(--glass-bg)';
-      }}
-      onMouseLeave={e => {
-        const el = e.currentTarget as HTMLElement;
-        if (!isActive) el.style.backgroundColor = 'transparent';
-      }}
     >
       <span className="shrink-0">{item.icon}</span>
       {!collapsed && item.label}
