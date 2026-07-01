@@ -77,6 +77,7 @@ const RoleRoute: React.FC<{ children: React.ReactNode; roles: string[] }> = ({ c
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/home" element={<Home />} />
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
       <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />

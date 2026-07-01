@@ -35,17 +35,28 @@ const Home: React.FC = () => {
         <div className="orb orb-3" />
       </div>
 
-      <header
-        className="relative z-10 flex items-center justify-between px-6 sm:px-10 h-16 backdrop-blur-xl"
-        style={{ borderBottom: '1px solid var(--glass-border)', backgroundColor: 'var(--header-bg)' }}
-      >
-        <div className="flex items-center gap-2">
-          <Hexagon size={22} style={{ color: 'var(--fg)' }} />
-          <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--fg)' }}>
-            ProcureFlow
-          </span>
-        </div>
-        <Link to="/login" className="btn-primary text-sm px-4 py-2">Sign In</Link>
+      {/* Floating glass pill navbar — iOS/macOS style */}
+      <header className="relative z-10 flex justify-center pt-5 px-4">
+        <nav
+          className="flex items-center gap-5 px-5 py-2.5 rounded-full"
+          style={{
+            backdropFilter: 'blur(28px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+            backgroundColor: 'var(--glass-bg)',
+            border: '1px solid var(--glass-border)',
+            boxShadow: '0 4px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.18)',
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Hexagon size={18} style={{ color: 'var(--fg)' }} />
+            <span className="text-sm font-bold tracking-tight" style={{ color: 'var(--fg)' }}>
+              ProcureFlow
+            </span>
+          </div>
+          <div className="w-px h-4 rounded-full" style={{ backgroundColor: 'var(--glass-border)' }} />
+          <span className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>Home</span>
+          <Link to="/login" className="btn-primary text-xs px-4 py-1.5">Sign In</Link>
+        </nav>
       </header>
 
       <main className="relative z-10">

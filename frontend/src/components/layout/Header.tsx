@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { notificationApi } from '../../services/endpoints';
-import { Menu, Bell, Search, LogOut, Sun, Moon } from 'lucide-react';
+import { Menu, Bell, Search, LogOut, Sun, Moon, Home } from 'lucide-react';
 
 interface HeaderProps {
   onMenuToggle: () => void;
@@ -63,6 +63,18 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Home page link */}
+        <button
+          onClick={() => navigate('/home')}
+          title="Go to home page"
+          className="p-2 rounded-lg transition-colors"
+          style={{ color: 'var(--fg-muted)' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--glass-bg)')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+        >
+          <Home size={18} />
+        </button>
+
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
@@ -86,7 +98,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
           <Bell size={18} />
           {unreadCount > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 text-[10px] font-bold rounded-full flex items-center justify-center keep-white"
-              style={{ background: 'linear-gradient(135deg,#6366f1,#a855f7)', color: '#fff' }}>
+              style={{ background: 'linear-gradient(135deg,#f97316,#fbbf24)', color: '#fff' }}>
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
@@ -98,7 +110,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
         <div className="flex items-center gap-3">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium keep-white"
-            style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: '#fff' }}
+            style={{ background: 'linear-gradient(135deg,#f97316,#fbbf24)', color: '#fff' }}
           >
             {user?.firstName?.[0]}{user?.lastName?.[0]}
           </div>

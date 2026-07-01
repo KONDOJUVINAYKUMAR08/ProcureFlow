@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { invoiceApi, vendorApi, customerApi } from '../../services/endpoints';
+import { useTheme } from '../../context/ThemeContext';
 import { formatCurrency, formatDate, getStatusBadgeClass, downloadFile } from '../../lib/utils';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -16,7 +17,7 @@ import {
 import InvoiceForm from './InvoiceForm';
 import InvoiceDetailModal from './InvoiceDetailModal';
 
-const COLORS = ['#6366f1', '#22d3ee', '#f59e0b', '#ef4444', '#10b981', '#8b5cf6'];
+const COLORS = ['#f97316', '#fbbf24', '#22d3ee', '#10b981', '#ef4444', '#a855f7'];
 
 const KpiCard: React.FC<{
   label: string; value: string | number; sub?: string;
@@ -43,7 +44,7 @@ const KpiCard: React.FC<{
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload?.length) {
     return (
-      <div className="bg-[#0d0d14] border border-white/10 rounded-xl p-3 shadow-2xl">
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--glass-border)' }} className="rounded-xl p-3 shadow-2xl">
         <p className="text-xs text-neutral-400 mb-1">{label}</p>
         {payload.map((p: any, i: number) => (
           <p key={i} className="text-sm font-semibold" style={{ color: p.color }}>
@@ -59,6 +60,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const InvoiceDashboard: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { theme } = useTheme();
+  const gridStroke = theme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+  const axisStroke = theme === 'light' ? '#94a3b8' : '#64748b';
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -196,20 +200,20 @@ const InvoiceDashboard: React.FC = () => {
                 <AreaChart data={monthlyData}>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorGst" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.3} />
                       <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                  <XAxis dataKey="month" stroke="#555" fontSize={11} />
-                  <YAxis stroke="#555" fontSize={11} tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                  <XAxis dataKey="month" stroke={axisStroke} fontSize={11} />
+                  <YAxis stroke={axisStroke} fontSize={11} tickFormatter={v => `₹${(v / 1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#6366f1" fill="url(#colorRevenue)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="revenue" name="Revenue" stroke="#f97316" fill="url(#colorRevenue)" strokeWidth={2} />
                   <Area type="monotone" dataKey="gst" name="GST" stroke="#22d3ee" fill="url(#colorGst)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -232,8 +236,8 @@ const InvoiceDashboard: React.FC = () => {
                     ))}
                   </Pie>
                   <Tooltip content={({ active, payload }) => active && payload?.[0] ? (
-                    <div className="bg-[#0d0d14] border border-white/10 rounded-lg p-2">
-                      <p className="text-sm text-white capitalize">{payload[0].name}: {payload[0].value}</p>
+                    <div style={{ background: 'var(--surface)', border: '1px solid var(--glass-border)' }} className="rounded-lg p-2">
+                      <p className="text-sm capitalize" style={{ color: 'var(--fg)' }}>{payload[0].name}: {payload[0].value}</p>
                     </div>
                   ) : null} />
                 </PieChart>

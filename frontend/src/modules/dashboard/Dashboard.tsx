@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { dashboardApi } from '../../services/endpoints';
 import { formatCurrency, formatRelativeTime, getStatusBadgeClass } from '../../lib/utils';
+import { useTheme } from '../../context/ThemeContext';
 import {
   Building2, ShoppingCart, FileText, FileCheck, Receipt,
   AlertTriangle, Clock, TrendingUp, ArrowUpRight, ArrowDownRight,
@@ -12,14 +13,14 @@ import {
   PieChart, Pie, Cell, AreaChart, Area,
 } from 'recharts';
 
-const CHART_COLORS = ['#ffffff', '#a0a0a0', '#555555', '#333333', '#1a1a1a'];
+const CHART_COLORS = ['#f97316', '#fbbf24', '#22d3ee', '#10b981', '#ef4444'];
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-card border border-white/10 rounded-lg p-3 shadow-xl">
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--glass-border)' }} className="rounded-lg p-3 shadow-xl">
         <p className="text-xs text-neutral-500 mb-1">{label}</p>
-        <p className="text-sm font-semibold text-white">{formatCurrency(payload[0].value)}</p>
+        <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>{formatCurrency(payload[0].value)}</p>
       </div>
     );
   }
@@ -27,6 +28,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const Dashboard: React.FC = () => {
+  const { theme } = useTheme();
+  const gridStroke = theme === 'light' ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+  const axisStroke = theme === 'light' ? '#94a3b8' : '#64748b';
+
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard'],
     queryFn: () => dashboardApi.getStats(),
@@ -126,15 +131,15 @@ const Dashboard: React.FC = () => {
                 <AreaChart data={monthlySpendData}>
                   <defs>
                     <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ffffff" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="#ffffff" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                  <XAxis dataKey="name" stroke="#555" fontSize={12} />
-                  <YAxis stroke="#555" fontSize={12} tickFormatter={(v) => `₹${(v/1000).toFixed(0)}k`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                  <XAxis dataKey="name" stroke={axisStroke} fontSize={12} />
+                  <YAxis stroke={axisStroke} fontSize={12} tickFormatter={(v) => `₹${(v/1000).toFixed(0)}k`} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="amount" stroke="#ffffff" strokeWidth={2} fill="url(#colorAmount)" />
+                  <Area type="monotone" dataKey="amount" stroke="#f97316" strokeWidth={2} fill="url(#colorAmount)" />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -205,11 +210,11 @@ const Dashboard: React.FC = () => {
             {deptData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={deptData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                  <XAxis dataKey="name" stroke="#555" fontSize={12} />
-                  <YAxis stroke="#555" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                  <XAxis dataKey="name" stroke={axisStroke} fontSize={12} />
+                  <YAxis stroke={axisStroke} fontSize={12} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="cost" fill="#ffffff" radius={[4, 4, 0, 0]} opacity={0.8} />
+                  <Bar dataKey="cost" fill="#f97316" radius={[4, 4, 0, 0]} opacity={0.85} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

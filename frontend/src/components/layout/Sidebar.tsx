@@ -90,7 +90,7 @@ const NavItemComponent: React.FC<{ item: NavItem; onClose: () => void; depth?: n
       title={collapsed ? item.label : undefined}
       className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${collapsed ? 'justify-center' : ''}`}
       style={({ isActive: active }) => ({
-        background: active ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'transparent',
+        background: active ? 'linear-gradient(135deg,#f97316,#fbbf24)' : 'transparent',
         color: active ? '#ffffff' : 'var(--fg-muted)',
         paddingLeft: !collapsed && depth > 0 ? `${depth * 12 + 12}px` : undefined,
       })}
@@ -211,7 +211,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false })
         >
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 keep-white"
-            style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: '#fff' }}
+            style={{ background: 'linear-gradient(135deg,#f97316,#fbbf24)', color: '#fff' }}
           >
             {user?.firstName?.[0]}{user?.lastName?.[0]}
           </div>
