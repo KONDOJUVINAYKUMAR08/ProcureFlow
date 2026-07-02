@@ -392,11 +392,16 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, onClose, onSaved }) 
                       )}
                       <td className="py-2 pr-2">
                         <input
-                          type="number" min={0}
-                          value={item.quantity}
-                          onChange={e => updateItem(idx, 'quantity', e.target.value === '' ? 0 : Number(e.target.value))}
+                          type="text"
+                          inputMode="numeric"
+                          value={item.quantity === 0 ? '' : String(item.quantity)}
+                          onChange={e => {
+                            const v = e.target.value.replace(/[^0-9]/g, '');
+                            updateItem(idx, 'quantity', v === '' ? 0 : parseInt(v, 10));
+                          }}
                           onFocus={e => e.target.select()}
-                          className="input-field text-xs py-1.5 no-spinner w-full"
+                          className="input-field text-xs py-1.5 w-full"
+                          placeholder="1"
                         />
                       </td>
                       {!isIndividual && (
@@ -410,22 +415,30 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, onClose, onSaved }) 
                       )}
                       <td className="py-2 pr-2">
                         <input
-                          type="number" min={0} step={0.01}
-                          value={item.rate === 0 ? '' : item.rate}
-                          onChange={e => updateItem(idx, 'rate', e.target.value === '' ? 0 : Number(e.target.value))}
+                          type="text"
+                          inputMode="decimal"
+                          value={item.rate === 0 ? '' : String(item.rate)}
+                          onChange={e => {
+                            const v = e.target.value.replace(/[^0-9.]/g, '');
+                            updateItem(idx, 'rate', v === '' ? 0 : parseFloat(v) || 0);
+                          }}
                           onFocus={e => e.target.select()}
-                          className="input-field text-xs py-1.5 no-spinner w-full"
+                          className="input-field text-xs py-1.5 w-full"
                           placeholder="0.00"
                         />
                       </td>
                       {!isIndividual && (
                         <td className="py-2 pr-2">
                           <input
-                            type="number" min={0} max={100}
-                            value={item.discount === 0 ? '' : item.discount}
-                            onChange={e => updateItem(idx, 'discount', e.target.value === '' ? 0 : Number(e.target.value))}
+                            type="text"
+                            inputMode="decimal"
+                            value={item.discount === 0 ? '' : String(item.discount)}
+                            onChange={e => {
+                              const v = e.target.value.replace(/[^0-9.]/g, '');
+                              updateItem(idx, 'discount', v === '' ? 0 : parseFloat(v) || 0);
+                            }}
                             onFocus={e => e.target.select()}
-                            className="input-field text-xs py-1.5 no-spinner w-full"
+                            className="input-field text-xs py-1.5 w-full"
                             placeholder="0"
                           />
                         </td>

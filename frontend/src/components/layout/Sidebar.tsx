@@ -149,48 +149,49 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false, o
 
   const SidebarContent: React.FC<{ collapsed?: boolean; isMobile?: boolean }> = ({ collapsed: col = false, isMobile = false }) => (
     <>
-      {/* Logo + toggle button — desktop only toggle */}
-      <div
-        className="flex items-center h-16 shrink-0 px-3 gap-2"
-        style={{ borderBottom: '1px solid var(--glass-border)' }}
-      >
-        <Hexagon size={20} style={{ color: 'var(--fg)' }} className="shrink-0" />
-
-        {col ? (
-          /* Collapsed: ≡ bars right next to the logo — click to expand */
-          !isMobile && onToggleCollapse && (
+      {/* Sidebar header — toggle only (logo lives in the top navbar) */}
+      {col ? (
+        /* Collapsed: large ≡ button centered — clearly shows "click to expand" */
+        <div className="h-16 flex items-center justify-center shrink-0"
+          style={{ borderBottom: '1px solid var(--glass-border)' }}>
+          {!isMobile && onToggleCollapse ? (
             <button
               onClick={onToggleCollapse}
-              className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg transition-all"
-              style={{ color: 'var(--fg-muted)', backgroundColor: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--glass-border)')}
-              title="Open sidebar"
+              className="hidden lg:flex w-10 h-10 rounded-xl items-center justify-center transition-all"
+              style={{ backgroundColor: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--fg-muted)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(99,102,241,0.5)'; (e.currentTarget as HTMLElement).style.color = 'var(--fg)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--glass-border)'; (e.currentTarget as HTMLElement).style.color = 'var(--fg-muted)'; }}
+              title="Open navigation"
             >
-              <Menu size={15} />
+              <Menu size={18} />
             </button>
-          )
-        ) : (
-          /* Expanded: logo text + ‹ chevron to collapse */
-          <>
-            <span className="text-base font-bold tracking-tight flex-1 truncate" style={{ color: 'var(--fg)' }}>
-              ProcureFlow
-            </span>
-            {!isMobile && onToggleCollapse && (
-              <button
-                onClick={onToggleCollapse}
-                className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg transition-all shrink-0"
-                style={{ color: 'var(--fg-muted)', backgroundColor: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--glass-border)')}
-                title="Close sidebar"
-              >
-                <ChevronLeft size={15} />
-              </button>
-            )}
-          </>
-        )}
-      </div>
+          ) : (
+            /* Mobile collapsed — shouldn't normally render but safe fallback */
+            <div className="w-10 h-10" />
+          )}
+        </div>
+      ) : (
+        /* Expanded: "NAVIGATION" label + ‹ close button */
+        <div className="h-16 flex items-center px-4 gap-3 shrink-0"
+          style={{ borderBottom: '1px solid var(--glass-border)' }}>
+          <span className="text-[11px] font-semibold tracking-widest uppercase flex-1"
+            style={{ color: 'var(--fg-faint)' }}>
+            Navigation
+          </span>
+          {!isMobile && onToggleCollapse && (
+            <button
+              onClick={onToggleCollapse}
+              className="hidden lg:flex w-8 h-8 rounded-lg items-center justify-center transition-all shrink-0"
+              style={{ backgroundColor: 'var(--glass-bg)', border: '1px solid var(--glass-border)', color: 'var(--fg-muted)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(99,102,241,0.5)'; (e.currentTarget as HTMLElement).style.color = 'var(--fg)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--glass-border)'; (e.currentTarget as HTMLElement).style.color = 'var(--fg-muted)'; }}
+              title="Close navigation"
+            >
+              <ChevronLeft size={16} />
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Nav */}
       <nav className="flex-1 p-4 overflow-y-auto overflow-x-hidden space-y-0">
@@ -282,10 +283,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false, o
         <SidebarContent collapsed={false} isMobile={true} />
       </aside>
 
-      {/* Desktop sidebar — z-[9] so it stays BELOW the main content wrapper (z-10),
-          which means modals inside the main content always render on top. */}
+      {/* Desktop sidebar — z-20; main content has no z-index so modals (z-50)
+          are in root stacking context and correctly appear above this. */}
       <aside
-        className={`hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:flex-col lg:z-[9] transition-[width] duration-300 ${collapsed ? 'lg:w-16' : 'lg:w-64'}`}
+        className={`hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:flex-col lg:z-20 transition-[width] duration-300 ${collapsed ? 'lg:w-16' : 'lg:w-64'}`}
         style={sidebarStyle}
       >
         <SidebarContent collapsed={collapsed} isMobile={false} />

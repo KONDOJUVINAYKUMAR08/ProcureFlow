@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { notificationApi } from '../../services/endpoints';
-import { Menu, Bell, Search, LogOut, Sun, Moon, Home } from 'lucide-react';
+import { Menu, Bell, Search, LogOut, Sun, Moon, Home, Hexagon } from 'lucide-react';
 
 interface HeaderProps {
   onMenuToggle: () => void;
@@ -33,19 +33,29 @@ const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
       className="sticky top-0 z-30 h-16 backdrop-blur-xl border-b flex items-center justify-between px-4 sm:px-6 lg:px-8"
       style={{ backgroundColor: 'var(--header-bg)', borderBottomColor: 'var(--glass-border)' }}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {/* Hamburger — mobile only; desktop sidebar has its own toggle */}
         <button
           onClick={onMenuToggle}
           title="Toggle sidebar"
-          className="p-2 rounded-lg transition-colors"
+          className="lg:hidden p-2 rounded-lg transition-colors"
           style={{ color: 'var(--fg-muted)' }}
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--glass-bg)')}
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           <Menu size={20} />
         </button>
+
+        {/* Logo — always visible in header, never hides with sidebar */}
+        <div className="flex items-center gap-2 shrink-0">
+          <Hexagon size={20} style={{ color: 'var(--fg)' }} />
+          <span className="text-base font-bold tracking-tight hidden sm:block" style={{ color: 'var(--fg)' }}>
+            ProcureFlow
+          </span>
+        </div>
+
         <div
-          className="hidden sm:flex items-center gap-2 rounded-lg px-3 py-2 w-72"
+          className="hidden sm:flex items-center gap-2 rounded-lg px-3 py-2 w-64"
           style={{ backgroundColor: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
         >
           <Search size={16} style={{ color: 'var(--fg-faint)' }} />

@@ -165,8 +165,10 @@ const Layout: React.FC = () => {
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} collapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} />
 
-      {/* Main content — min-w-0 prevents wide tables from expanding the page */}
-      <div className={`flex-1 flex flex-col min-h-screen min-w-0 transition-[padding] duration-300 relative z-10 ${sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-64'}`}>
+      {/* Main content — no z-index so it doesn't create a stacking context;
+          fixed modals inside (z-50) therefore participate in the root stacking
+          context and paint above the sidebar (z-20). */}
+      <div className={`flex-1 flex flex-col min-h-screen min-w-0 transition-[padding] duration-300 ${sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-64'}`}>
         <Header onMenuToggle={toggleSidebar} />
         <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8">
           <Outlet />
