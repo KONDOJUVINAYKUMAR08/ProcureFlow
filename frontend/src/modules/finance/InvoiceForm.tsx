@@ -169,13 +169,20 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, onClose, onSaved }) 
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-[#0d0d14] border border-white/[0.08] rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-6 border-b border-white/[0.06]">
+      <div
+        className="rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl"
+        style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--glass-border)', backdropFilter: 'blur(40px) saturate(180%)', WebkitBackdropFilter: 'blur(40px) saturate(180%)' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-6" style={{ borderBottom: '1px solid var(--glass-border)' }}>
           <div>
-            <h2 className="text-xl font-semibold text-white">{isEdit ? 'Edit Invoice' : 'Create New Invoice'}</h2>
-            <p className="text-sm text-neutral-400 mt-0.5">Fill in the details below to generate the invoice PDF</p>
+            <h2 className="text-xl font-semibold" style={{ color: 'var(--fg)' }}>{isEdit ? 'Edit Invoice' : 'Create New Invoice'}</h2>
+            <p className="text-sm mt-0.5" style={{ color: 'var(--fg-muted)' }}>Fill in the details below to generate the invoice PDF</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/5 text-neutral-400 hover:text-white transition-colors">
+          <button onClick={onClose} className="p-2 rounded-lg transition-colors" style={{ color: 'var(--fg-faint)' }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--glass-bg)')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+          >
             <X size={20} />
           </button>
         </div>
@@ -189,80 +196,82 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, onClose, onSaved }) 
 
           {/* Template selector */}
           <div>
-            <h3 className="text-sm font-semibold text-neutral-300 uppercase tracking-widest mb-4">Invoice Template</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--fg-muted)' }}>Invoice Template</h3>
             <div className="grid grid-cols-2 gap-3">
               <button type="button" onClick={() => setForm(f => ({ ...f, templateType: 'beulix' }))}
-                className={`p-4 rounded-xl border text-left transition-colors ${form.templateType === 'beulix' ? 'border-white/30 bg-white/[0.06]' : 'border-white/[0.06] hover:bg-white/[0.02]'}`}>
-                <p className="text-sm font-semibold text-white">Beulix (Tax Invoice)</p>
-                <p className="text-xs text-neutral-500 mt-1">Company tax invoice with GST/CGST/SGST/IGST line items.</p>
+                className="p-4 rounded-xl text-left transition-colors"
+                style={{ border: `1px solid ${form.templateType === 'beulix' ? 'rgba(99,102,241,0.6)' : 'var(--glass-border)'}`, background: form.templateType === 'beulix' ? 'var(--glass-bg)' : 'transparent' }}>
+                <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>Beulix (Tax Invoice)</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--fg-faint)' }}>Company tax invoice with GST/CGST/SGST/IGST line items.</p>
               </button>
               <button type="button" onClick={() => setForm(f => ({ ...f, templateType: 'individual', invoiceType: 'CUSTOMER_INVOICE' }))}
-                className={`p-4 rounded-xl border text-left transition-colors ${form.templateType === 'individual' ? 'border-white/30 bg-white/[0.06]' : 'border-white/[0.06] hover:bg-white/[0.02]'}`}>
-                <p className="text-sm font-semibold text-white">Individual (Trainer Invoice)</p>
-                <p className="text-xs text-neutral-500 mt-1">No GST/tax breakdown — simple qty/price line items.</p>
+                className="p-4 rounded-xl text-left transition-colors"
+                style={{ border: `1px solid ${form.templateType === 'individual' ? 'rgba(99,102,241,0.6)' : 'var(--glass-border)'}`, background: form.templateType === 'individual' ? 'var(--glass-bg)' : 'transparent' }}>
+                <p className="text-sm font-semibold" style={{ color: 'var(--fg)' }}>Individual (Trainer Invoice)</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--fg-faint)' }}>No GST/tax breakdown — simple qty/price line items.</p>
               </button>
             </div>
           </div>
 
           {/* Invoice Type & Party */}
           <div>
-            <h3 className="text-sm font-semibold text-neutral-300 uppercase tracking-widest mb-4">
+            <h3 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--fg-muted)' }}>
               {isIndividual ? 'Billing To' : 'Invoice Details'}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {!isIndividual && (
                 <>
                   <div>
-                    <label className="block text-sm text-neutral-300 mb-1.5">Invoice Type *</label>
+                    <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Invoice Type *</label>
                     <select value={form.invoiceType} onChange={e => setForm({ ...form, invoiceType: e.target.value })} className="input-field">
-                      <option value="VENDOR_INVOICE" className="bg-[#0d0d14]">Vendor Invoice (Payable)</option>
-                      <option value="CUSTOMER_INVOICE" className="bg-[#0d0d14]">Customer Invoice (Receivable)</option>
+                      <option value="VENDOR_INVOICE" style={{ backgroundColor: 'var(--surface)' }}>Vendor Invoice (Payable)</option>
+                      <option value="CUSTOMER_INVOICE" style={{ backgroundColor: 'var(--surface)' }}>Customer Invoice (Receivable)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm text-neutral-300 mb-1.5">
+                    <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>
                       {form.invoiceType === 'VENDOR_INVOICE' ? 'Vendor' : 'Customer'}
                     </label>
                     {form.invoiceType === 'VENDOR_INVOICE' ? (
                       <select value={form.vendorId} onChange={e => setForm({ ...form, vendorId: e.target.value })} className="input-field">
-                        <option value="" className="bg-[#0d0d14]">Select vendor (or type manually below)</option>
-                        {vendors.map((v: any) => <option key={v._id} value={v._id} className="bg-[#0d0d14]">{v.vendorName}</option>)}
+                        <option value="" style={{ backgroundColor: 'var(--surface)' }}>Select vendor (or type manually below)</option>
+                        {vendors.map((v: any) => <option key={v._id} value={v._id} style={{ backgroundColor: 'var(--surface)' }}>{v.vendorName}</option>)}
                       </select>
                     ) : (
                       <select value={form.customerId} onChange={e => setForm({ ...form, customerId: e.target.value })} className="input-field">
-                        <option value="" className="bg-[#0d0d14]">Select customer (or type manually below)</option>
-                        {customers.map((c: any) => <option key={c._id} value={c._id} className="bg-[#0d0d14]">{c.companyName}</option>)}
+                        <option value="" style={{ backgroundColor: 'var(--surface)' }}>Select customer (or type manually below)</option>
+                        {customers.map((c: any) => <option key={c._id} value={c._id} style={{ backgroundColor: 'var(--surface)' }}>{c.companyName}</option>)}
                       </select>
                     )}
                   </div>
                 </>
               )}
               <div>
-                <label className="block text-sm text-neutral-300 mb-1.5">{isIndividual ? 'Company *' : 'Party Name *'}</label>
+                <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>{isIndividual ? 'Company *' : 'Party Name *'}</label>
                 <input value={form.partyName} onChange={e => setForm({ ...form, partyName: e.target.value })} required className="input-field" placeholder="Company or individual name" />
               </div>
               <div>
-                <label className="block text-sm text-neutral-300 mb-1.5">Address</label>
+                <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Address</label>
                 <input value={form.partyAddress} onChange={e => setForm({ ...form, partyAddress: e.target.value })} className="input-field" placeholder="Street, City, State" />
               </div>
               <div>
-                <label className="block text-sm text-neutral-300 mb-1.5">PO Number</label>
+                <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>PO Number</label>
                 <input value={form.poNumber} onChange={e => setForm({ ...form, poNumber: e.target.value })} className="input-field" placeholder="PO-2026-0001" />
               </div>
               {isIndividual && (
                 <>
                   <div>
-                    <label className="block text-sm text-neutral-300 mb-1.5">Contact Person</label>
+                    <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Contact Person</label>
                     <input value={form.contactPerson} onChange={e => setForm({ ...form, contactPerson: e.target.value })} className="input-field" placeholder="Vinay" />
                   </div>
                   <div>
-                    <label className="block text-sm text-neutral-300 mb-1.5">Contact Number</label>
+                    <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Contact Number</label>
                     <input value={form.contactNumber} onChange={e => setForm({ ...form, contactNumber: e.target.value })} className="input-field" placeholder="7731819993" />
                   </div>
                 </>
               )}
               <div>
-                <label className="block text-sm text-neutral-300 mb-1.5">{isIndividual ? 'PAN No' : 'GSTIN'}</label>
+                <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>{isIndividual ? 'PAN No' : 'GSTIN'}</label>
                 {isIndividual ? (
                   <input value={form.partyPan} onChange={e => setForm({ ...form, partyPan: e.target.value })} className="input-field" placeholder="LAHUHSK0010" />
                 ) : (
@@ -271,12 +280,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, onClose, onSaved }) 
               </div>
               {isIndividual ? (
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">GST No</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>GST No</label>
                   <input value={form.partyGstin} onChange={e => setForm({ ...form, partyGstin: e.target.value })} className="input-field" placeholder="29ABCDE1234F1Z5" maxLength={15} />
                 </div>
               ) : (
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">PAN</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>PAN</label>
                   <input value={form.partyPan} onChange={e => setForm({ ...form, partyPan: e.target.value })} className="input-field" placeholder="AAAAA0000A" maxLength={10} />
                 </div>
               )}
@@ -285,58 +294,58 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, onClose, onSaved }) 
 
           {isIndividual ? (
             <div>
-              <h3 className="text-sm font-semibold text-neutral-300 uppercase tracking-widest mb-4">Training Details</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--fg-muted)' }}>Training Details</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">Invoice Date *</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Invoice Date *</label>
                   <input type="date" value={form.issueDate} onChange={e => setForm({ ...form, issueDate: e.target.value })} required className="input-field" />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">Due Date *</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Due Date *</label>
                   <input type="date" value={form.dueDate} onChange={e => setForm({ ...form, dueDate: e.target.value })} required className="input-field" />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">Course/Activity Name</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Course/Activity Name</label>
                   <input value={form.courseActivityName} onChange={e => setForm({ ...form, courseActivityName: e.target.value })} className="input-field" placeholder="DevOps" />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">Mode of Lecture</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Mode of Lecture</label>
                   <select value={form.modeOfLecture} onChange={e => setForm({ ...form, modeOfLecture: e.target.value })} className="input-field">
-                    <option value="In-Person" className="bg-[#0d0d14]">In-Person</option>
-                    <option value="Online" className="bg-[#0d0d14]">Online</option>
-                    <option value="Hybrid" className="bg-[#0d0d14]">Hybrid</option>
+                    <option value="In-Person" style={{ backgroundColor: 'var(--surface)' }}>In-Person</option>
+                    <option value="Online" style={{ backgroundColor: 'var(--surface)' }}>Online</option>
+                    <option value="Hybrid" style={{ backgroundColor: 'var(--surface)' }}>Hybrid</option>
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm text-neutral-300 mb-1.5">Classroom Location</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Classroom Location</label>
                   <input value={form.classroomLocation} onChange={e => setForm({ ...form, classroomLocation: e.target.value })} className="input-field" placeholder="First Floor, Room No:01" />
                 </div>
               </div>
             </div>
           ) : (
             <div>
-              <h3 className="text-sm font-semibold text-neutral-300 uppercase tracking-widest mb-4">Dates &amp; Tax Type</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--fg-muted)' }}>Dates &amp; Tax Type</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">Issue Date *</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Issue Date *</label>
                   <input type="date" value={form.issueDate} onChange={e => setForm({ ...form, issueDate: e.target.value })} required className="input-field" />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">Due Date *</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Due Date *</label>
                   <input type="date" value={form.dueDate} onChange={e => setForm({ ...form, dueDate: e.target.value })} required className="input-field" />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">Place of Supply</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Place of Supply</label>
                   <input value={form.placeOfSupply} onChange={e => setForm({ ...form, placeOfSupply: e.target.value })} className="input-field" placeholder="Karnataka (29)" />
                 </div>
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1.5">Tax Type</label>
+                  <label className="block text-sm mb-1.5" style={{ color: 'var(--fg-muted)' }}>Tax Type</label>
                   <select value={form.taxType} onChange={e => {
                     setForm({ ...form, taxType: e.target.value });
                     setLineItems(lineItems.map(i => calcItem(i, e.target.value === 'inter_state')));
                   }} className="input-field">
-                    <option value="intra_state" className="bg-[#0d0d14]">CGST + SGST (Intra-State)</option>
-                    <option value="inter_state" className="bg-[#0d0d14]">IGST (Inter-State)</option>
+                    <option value="intra_state" style={{ backgroundColor: 'var(--surface)' }}>CGST + SGST (Intra-State)</option>
+                    <option value="inter_state" style={{ backgroundColor: 'var(--surface)' }}>IGST (Inter-State)</option>
                   </select>
                 </div>
               </div>
@@ -354,23 +363,23 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, onClose, onSaved }) 
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/[0.06]">
-                    <th className="text-left text-xs font-semibold text-neutral-500 pb-2 pr-2 min-w-[200px]">Description *</th>
-                    {!isIndividual && <th className="text-left text-xs font-semibold text-neutral-500 pb-2 pr-2 w-24">HSN/SAC</th>}
-                    <th className="text-left text-xs font-semibold text-neutral-500 pb-2 pr-2 w-16">Qty *</th>
-                    {!isIndividual && <th className="text-left text-xs font-semibold text-neutral-500 pb-2 pr-2 w-24">Unit</th>}
-                    <th className="text-left text-xs font-semibold text-neutral-500 pb-2 pr-2 w-24">{isIndividual ? 'Price *' : 'Rate *'}</th>
-                    {!isIndividual && <th className="text-left text-xs font-semibold text-neutral-500 pb-2 pr-2 w-16">Disc%</th>}
-                    {!isIndividual && <th className="text-left text-xs font-semibold text-neutral-500 pb-2 pr-2 w-20">GST%</th>}
-                    {!isIndividual && <th className="text-right text-xs font-semibold text-neutral-500 pb-2 pr-2 w-24">Taxable</th>}
-                    {!isIndividual && <th className="text-right text-xs font-semibold text-neutral-500 pb-2 pr-2 w-24">{isInterState ? 'IGST' : 'CGST+SGST'}</th>}
-                    <th className="text-right text-xs font-semibold text-neutral-500 pb-2 w-24">Amount</th>
+                  <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                    <th className="text-left text-xs font-semibold pb-2 pr-2 min-w-[180px]" style={{ color: 'var(--fg-faint)' }}>Description *</th>
+                    {!isIndividual && <th className="text-left text-xs font-semibold pb-2 pr-2 w-24" style={{ color: 'var(--fg-faint)' }}>HSN/SAC</th>}
+                    <th className="text-left text-xs font-semibold pb-2 pr-2 w-24" style={{ color: 'var(--fg-faint)' }}>Qty *</th>
+                    {!isIndividual && <th className="text-left text-xs font-semibold pb-2 pr-2 w-24" style={{ color: 'var(--fg-faint)' }}>Unit</th>}
+                    <th className="text-left text-xs font-semibold pb-2 pr-2 w-32" style={{ color: 'var(--fg-faint)' }}>{isIndividual ? 'Price *' : 'Rate *'}</th>
+                    {!isIndividual && <th className="text-left text-xs font-semibold pb-2 pr-2 w-20" style={{ color: 'var(--fg-faint)' }}>Disc%</th>}
+                    {!isIndividual && <th className="text-left text-xs font-semibold pb-2 pr-2 w-20" style={{ color: 'var(--fg-faint)' }}>GST%</th>}
+                    {!isIndividual && <th className="text-right text-xs font-semibold pb-2 pr-2 w-24" style={{ color: 'var(--fg-faint)' }}>Taxable</th>}
+                    {!isIndividual && <th className="text-right text-xs font-semibold pb-2 pr-2 w-24" style={{ color: 'var(--fg-faint)' }}>{isInterState ? 'IGST' : 'CGST+SGST'}</th>}
+                    <th className="text-right text-xs font-semibold pb-2 w-24" style={{ color: 'var(--fg-faint)' }}>Amount</th>
                     <th className="w-8"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {lineItems.map((item, idx) => (
-                    <tr key={idx} className="border-b border-white/[0.03]">
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--glass-border)' }}>
                       <td className="py-2 pr-2">
                         <input value={item.description} onChange={e => updateItem(idx, 'description', e.target.value)}
                           className="input-field text-xs py-1.5" placeholder="Description / batch / activity" />
@@ -382,45 +391,62 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, onClose, onSaved }) 
                         </td>
                       )}
                       <td className="py-2 pr-2">
-                        <input type="number" min={0} value={item.quantity} onChange={e => updateItem(idx, 'quantity', Number(e.target.value))}
-                          className="input-field text-xs py-1.5" />
+                        <input
+                          type="number" min={0}
+                          value={item.quantity}
+                          onChange={e => updateItem(idx, 'quantity', e.target.value === '' ? 0 : Number(e.target.value))}
+                          onFocus={e => e.target.select()}
+                          className="input-field text-xs py-1.5 no-spinner w-full"
+                        />
                       </td>
                       {!isIndividual && (
                         <td className="py-2 pr-2">
                           <select value={item.unit || 'Nos'} onChange={e => updateItem(idx, 'unit', e.target.value)} className="input-field text-xs py-1.5">
                             {['Nos', 'Hrs', 'Days', 'Months', 'Kg', 'L', 'Pcs', 'Sets'].map(u => (
-                              <option key={u} value={u} className="bg-[#0d0d14]">{u}</option>
+                              <option key={u} value={u} style={{ backgroundColor: 'var(--surface)' }}>{u}</option>
                             ))}
                           </select>
                         </td>
                       )}
                       <td className="py-2 pr-2">
-                        <input type="number" min={0} step={0.01} value={item.rate} onChange={e => updateItem(idx, 'rate', Number(e.target.value))}
-                          className="input-field text-xs py-1.5" />
+                        <input
+                          type="number" min={0} step={0.01}
+                          value={item.rate === 0 ? '' : item.rate}
+                          onChange={e => updateItem(idx, 'rate', e.target.value === '' ? 0 : Number(e.target.value))}
+                          onFocus={e => e.target.select()}
+                          className="input-field text-xs py-1.5 no-spinner w-full"
+                          placeholder="0.00"
+                        />
                       </td>
                       {!isIndividual && (
                         <td className="py-2 pr-2">
-                          <input type="number" min={0} max={100} value={item.discount || 0} onChange={e => updateItem(idx, 'discount', Number(e.target.value))}
-                            className="input-field text-xs py-1.5" />
+                          <input
+                            type="number" min={0} max={100}
+                            value={item.discount === 0 ? '' : item.discount}
+                            onChange={e => updateItem(idx, 'discount', e.target.value === '' ? 0 : Number(e.target.value))}
+                            onFocus={e => e.target.select()}
+                            className="input-field text-xs py-1.5 no-spinner w-full"
+                            placeholder="0"
+                          />
                         </td>
                       )}
                       {!isIndividual && (
                         <td className="py-2 pr-2">
                           <select value={item.gstPercentage} onChange={e => updateItem(idx, 'gstPercentage', Number(e.target.value))} className="input-field text-xs py-1.5">
-                            {GST_RATES.map(r => <option key={r} value={r} className="bg-[#0d0d14]">{r}%</option>)}
+                            {GST_RATES.map(r => <option key={r} value={r} style={{ backgroundColor: 'var(--surface)' }}>{r}%</option>)}
                           </select>
                         </td>
                       )}
-                      {!isIndividual && <td className="py-2 pr-2 text-right text-xs text-neutral-300">{formatCurrency(item.taxableAmount)}</td>}
+                      {!isIndividual && <td className="py-2 pr-2 text-right text-xs" style={{ color: 'var(--fg-muted)' }}>{formatCurrency(item.taxableAmount)}</td>}
                       {!isIndividual && (
                         <td className="py-2 pr-2 text-right text-xs text-cyan-400">
                           {isInterState ? formatCurrency(item.igstAmount) : formatCurrency((item.cgstAmount || 0) + (item.sgstAmount || 0))}
                         </td>
                       )}
-                      <td className="py-2 text-right text-xs font-semibold text-white">{formatCurrency(item.totalAmount)}</td>
+                      <td className="py-2 text-right text-xs font-semibold" style={{ color: 'var(--fg)' }}>{formatCurrency(item.totalAmount)}</td>
                       <td className="py-2 pl-2">
                         {lineItems.length > 1 && (
-                          <button type="button" onClick={() => removeItem(idx)} className="p-1 hover:text-red-400 text-neutral-600 transition-colors">
+                          <button type="button" onClick={() => removeItem(idx)} className="p-1 hover:text-red-400 transition-colors" style={{ color: 'var(--fg-faint)' }}>
                             <Trash2 size={13} />
                           </button>
                         )}
@@ -436,40 +462,41 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ invoice, onClose, onSaved }) 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {!isIndividual && (
               <div>
-                <h3 className="text-sm font-semibold text-neutral-300 uppercase tracking-widest mb-4">TDS</h3>
+                <h3 className="text-sm font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--fg-muted)' }}>TDS</h3>
                 <div className="flex items-center gap-3">
-                  <label className="text-sm text-neutral-400">TDS %</label>
+                  <label className="text-sm" style={{ color: 'var(--fg-muted)' }}>TDS %</label>
                   <select value={form.tdsPercentage} onChange={e => setForm({ ...form, tdsPercentage: Number(e.target.value) })}
                     className="input-field w-32">
-                    {[0, 1, 2, 5, 10].map(r => <option key={r} value={r} className="bg-[#0d0d14]">{r}%</option>)}
+                    {[0, 1, 2, 5, 10].map(r => <option key={r} value={r} style={{ backgroundColor: 'var(--surface)' }}>{r}%</option>)}
                   </select>
                 </div>
               </div>
             )}
 
-            <div className={`bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 space-y-2 ${isIndividual ? 'md:col-span-2' : ''}`}>
-              <div className="flex justify-between text-sm"><span className="text-neutral-400">Sub Total</span><span className="text-white">{formatCurrency(subTotal)}</span></div>
+            <div className={`rounded-xl p-4 space-y-2 ${isIndividual ? 'md:col-span-2' : ''}`}
+              style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}>
+              <div className="flex justify-between text-sm"><span style={{ color: 'var(--fg-muted)' }}>Sub Total</span><span style={{ color: 'var(--fg)' }}>{formatCurrency(subTotal)}</span></div>
               {!isIndividual && (
                 isInterState ? (
-                  <div className="flex justify-between text-sm"><span className="text-neutral-400">IGST</span><span className="text-cyan-400">{formatCurrency(totalIgst)}</span></div>
+                  <div className="flex justify-between text-sm"><span style={{ color: 'var(--fg-muted)' }}>IGST</span><span className="text-cyan-400">{formatCurrency(totalIgst)}</span></div>
                 ) : (
                   <>
-                    <div className="flex justify-between text-sm"><span className="text-neutral-400">CGST</span><span className="text-cyan-400">{formatCurrency(totalCgst)}</span></div>
-                    <div className="flex justify-between text-sm"><span className="text-neutral-400">SGST</span><span className="text-cyan-400">{formatCurrency(totalSgst)}</span></div>
+                    <div className="flex justify-between text-sm"><span style={{ color: 'var(--fg-muted)' }}>CGST</span><span className="text-cyan-400">{formatCurrency(totalCgst)}</span></div>
+                    <div className="flex justify-between text-sm"><span style={{ color: 'var(--fg-muted)' }}>SGST</span><span className="text-cyan-400">{formatCurrency(totalSgst)}</span></div>
                   </>
                 )
               )}
               {!isIndividual && (form.tdsPercentage as number) > 0 && (
                 <div className="flex justify-between text-sm"><span className="text-amber-400">TDS ({form.tdsPercentage}%)</span><span className="text-amber-400">-{formatCurrency(tdsAmount)}</span></div>
               )}
-              <div className="flex justify-between text-base font-bold border-t border-white/10 pt-2">
-                <span className="text-neutral-300">{isIndividual ? 'Grand Total' : 'Net Payable'}</span>
+              <div className="flex justify-between text-base font-bold pt-2" style={{ borderTop: '1px solid var(--glass-border)' }}>
+                <span style={{ color: 'var(--fg-muted)' }}>{isIndividual ? 'Grand Total' : 'Net Payable'}</span>
                 <span className="text-emerald-400 flex items-center gap-1"><IndianRupee size={14} />{formatCurrency(isIndividual ? subTotal : netPayable).replace('₹', '')}</span>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
+          <div className="flex justify-end gap-3 pt-4" style={{ borderTop: '1px solid var(--glass-border)' }}>
             <button type="button" onClick={onClose} className="btn-secondary">Cancel</button>
             <button type="submit" disabled={mutation.isPending} className="btn-primary min-w-[140px]">
               {mutation.isPending ? 'Saving...' : isEdit ? 'Update Invoice' : 'Create Invoice'}

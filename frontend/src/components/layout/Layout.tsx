@@ -9,7 +9,13 @@ import { Shield, Key, AlertCircle, CheckCircle } from 'lucide-react';
 const Layout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    try { return localStorage.getItem('sidebarCollapsed') === 'true'; } catch { return false; }
+    try {
+      const saved = localStorage.getItem('sidebarCollapsed');
+      if (saved !== null) return saved === 'true';
+      // Auto-collapse on viewports narrower than 1280px so the sidebar doesn't
+      // eat into the content area on typical 1366×768 / 100%-zoom laptops.
+      return typeof window !== 'undefined' && window.innerWidth < 1280;
+    } catch { return false; }
   });
   const { user, updateUser } = useAuth();
 
@@ -157,7 +163,7 @@ const Layout: React.FC = () => {
       )}
 
       {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} collapsed={sidebarCollapsed} />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} collapsed={sidebarCollapsed} onToggleCollapse={toggleSidebar} />
 
       {/* Main content — min-w-0 prevents wide tables from expanding the page */}
       <div className={`flex-1 flex flex-col min-h-screen min-w-0 transition-[padding] duration-300 relative z-10 ${sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-64'}`}>

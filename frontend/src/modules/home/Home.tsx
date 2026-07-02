@@ -2,9 +2,10 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Hexagon, ShoppingCart, Receipt, BarChart3, ShieldCheck,
-  ArrowRight, LayoutDashboard, LogOut,
+  ArrowRight, LayoutDashboard, LogOut, Sun, Moon,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const features = [
   {
@@ -31,6 +32,7 @@ const features = [
 
 const Home: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -69,6 +71,18 @@ const Home: React.FC = () => {
           <div className="w-px h-4 rounded-full" style={{ backgroundColor: 'var(--glass-border)' }} />
 
           <span className="text-sm font-medium" style={{ color: 'var(--fg-muted)' }}>Home</span>
+
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="flex items-center justify-center w-7 h-7 rounded-full transition-all"
+            style={{ color: 'var(--fg-muted)' }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--glass-bg)')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+          >
+            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
 
           {isAuthenticated ? (
             <>

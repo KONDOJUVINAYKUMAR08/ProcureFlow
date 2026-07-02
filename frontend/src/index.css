@@ -280,3 +280,13 @@ html.light .tab-active-dark { background: linear-gradient(135deg,#2563eb,#7c3aed
   opacity: 1; transform: translateY(0);
   transition: all 0.3s ease-out;
 }
+
+/* ── Date input: native calendar follows theme ───────────────────────────── */
+input[type="date"], input[type="datetime-local"] { color-scheme: dark; }
+html.light input[type="date"],
+html.light input[type="datetime-local"] { color-scheme: light; }
+
+/* ── No-spinner: hide number input arrows for manual entry ───────────────── */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.no-spinner { -moz-appearance: textfield; appearance: textfield; }

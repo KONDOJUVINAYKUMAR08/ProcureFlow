@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { invoiceApi, vendorApi, customerApi } from '../../services/endpoints';
 import { useTheme } from '../../context/ThemeContext';
@@ -72,6 +72,7 @@ const InvoiceDashboard: React.FC = () => {
   const gradientEnd     = isDark ? '#a78bfa' : '#fbbf24';
 
   const [page, setPage] = useState(1);
+  const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
@@ -81,9 +82,15 @@ const InvoiceDashboard: React.FC = () => {
   const [editInvoice, setEditInvoice] = useState<any>(null);
   const [viewInvoice, setViewInvoice] = useState<any>(null);
 
+  // Debounce search so rapid typing doesn't fire a request per keystroke
+  useEffect(() => {
+    const t = setTimeout(() => { setSearch(searchInput); setPage(1); }, 350);
+    return () => clearTimeout(t);
+  }, [searchInput]);
+
   const { data: invoicesData, isLoading } = useQuery({
-    queryKey: ['invoices', page, search, statusFilter, typeFilter],
-    queryFn: () => invoiceApi.getAll({ page, limit: 10, search, status: statusFilter, invoiceType: typeFilter }),
+    queryKey: ['invoices', page, search, statusFilter, typeFilter, year, month],
+    queryFn: () => invoiceApi.getAll({ page, limit: 10, search: search || undefined, status: statusFilter || undefined, invoiceType: typeFilter || undefined, year: year || undefined, month: month || undefined }),
   });
 
   const { data: statsData } = useQuery({
@@ -140,6 +147,20 @@ const InvoiceDashboard: React.FC = () => {
 
   const statusPie = byStatus.map((s: any) => ({ name: s.status, value: s.count }));
 
+  // Per-month invoice count derived from the dashboard invoices array
+  const monthlyBreakdown = useMemo(() => {
+    if (!dashboard?.invoices?.length) return [];
+    const map: Record<string, number> = {};
+    for (const inv of dashboard.invoices) {
+      if (inv.issueDate) {
+        const d = new Date(inv.issueDate);
+        const key = MONTHS[d.getMonth()];
+        map[key] = (map[key] || 0) + 1;
+      }
+    }
+    return MONTHS.filter(m => map[m]).map(m => ({ month: m, count: map[m] }));
+  }, [dashboard?.invoices]);
+
   const canCreate = user?.role === 'admin' || user?.role === 'finance' || user?.role === 'procurement_manager';
   const canApprove = user?.role === 'admin' || user?.role === 'finance';
 
@@ -181,6 +202,32 @@ const InvoiceDashboard: React.FC = () => {
         <KpiCard label="TDS deducted" value={formatCurrency(dashboard?.totalTds || 0)} sub="Total TDS collected from customers" icon={<TrendingUp size={20} />} color="bg-amber-500" />
         <KpiCard label="GST collected" value={formatCurrency(dashboard?.totalGst || 0)} sub="Sum of CGST/SGST/IGST" icon={<Percent size={20} />} color="bg-cyan-500" />
       </div>
+
+      {/* Monthly count — shows per-month invoice count for the current filter */}
+      {monthlyBreakdown.length > 0 && (
+        <div className="glass-card p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold" style={{ color: 'var(--fg-muted)' }}>
+              Invoices by Month {year ? `(${year})` : ''}
+            </h3>
+            <span className="text-xs" style={{ color: 'var(--fg-faint)' }}>{dashboard?.totalInvoices} total</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {monthlyBreakdown.map(({ month: m, count }) => (
+              <div
+                key={m}
+                onClick={() => { setMonth(String(MONTHS.indexOf(m) + 1)); if (!year) setYear(String(new Date().getFullYear())); }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all"
+                style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
+                title={`Filter by ${m}`}
+              >
+                <span className="text-xs font-medium" style={{ color: 'var(--fg-muted)' }}>{m.slice(0, 3)}</span>
+                <span className="text-sm font-bold" style={{ background: 'linear-gradient(135deg,#2563eb,#7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {byStatus.map((s: any, i: number) => (
@@ -291,10 +338,11 @@ const InvoiceDashboard: React.FC = () => {
           <Search size={16} className="text-neutral-500" />
           <input
             type="text" placeholder="Search invoice number or party..."
-            value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
-            className="bg-transparent text-sm text-white placeholder:text-neutral-500 outline-none w-full"
+            value={searchInput} onChange={e => setSearchInput(e.target.value)}
+            className="bg-transparent text-sm outline-none w-full"
+            style={{ color: 'var(--fg)' }}
           />
-          {search && <button onClick={() => setSearch('')}><X size={14} className="text-neutral-500 hover:text-white" /></button>}
+          {searchInput && <button onClick={() => { setSearchInput(''); setSearch(''); }}><X size={14} style={{ color: 'var(--fg-faint)' }} /></button>}
         </div>
         <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
           className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 text-sm text-white outline-none">

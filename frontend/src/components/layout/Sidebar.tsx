@@ -20,6 +20,7 @@ import {
   CreditCard,
   ChevronDown,
   ChevronRight,
+  ChevronLeft,
   Wallet,
 } from 'lucide-react';
 
@@ -27,6 +28,7 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 interface NavItem {
@@ -44,7 +46,6 @@ const NavItemComponent: React.FC<{ item: NavItem; onClose: () => void; depth?: n
   const [expanded, setExpanded] = useState(() =>
     item.children ? item.children.some(c => location.pathname.startsWith(c.path)) : false
   );
-  const isActive = location.pathname === item.path;
   const hasChildren = item.children && item.children.length > 0;
 
   if (hasChildren) {
@@ -115,7 +116,7 @@ const NavGroup: React.FC<{ label: string; children: React.ReactNode; collapsed?:
   </div>
 );
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false, onToggleCollapse }) => {
   const { user } = useAuth();
   const role = user?.role || '';
 
@@ -145,18 +146,31 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false })
 
   const filter = (items: NavItem[]) => items.filter(item => !item.roles || item.roles.includes(role));
 
-  const SidebarContent: React.FC<{ collapsed?: boolean }> = ({ collapsed: col = false }) => (
+  const SidebarContent: React.FC<{ collapsed?: boolean; isMobile?: boolean }> = ({ collapsed: col = false, isMobile = false }) => (
     <>
-      {/* Logo */}
+      {/* Logo + collapse toggle */}
       <div
-        className={`flex items-center gap-2 h-16 shrink-0 ${col ? 'justify-center px-2' : 'px-6'}`}
+        className={`flex items-center h-16 shrink-0 ${col ? 'justify-center px-2' : 'px-4 gap-2'}`}
         style={{ borderBottom: '1px solid var(--glass-border)' }}
       >
-        <Hexagon size={24} style={{ color: 'var(--fg)' }} className="shrink-0" />
+        <Hexagon size={22} style={{ color: 'var(--fg)' }} className="shrink-0" />
         {!col && (
-          <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--fg)' }}>
+          <span className="text-lg font-bold tracking-tight flex-1 truncate" style={{ color: 'var(--fg)' }}>
             ProcureFlow
           </span>
+        )}
+        {/* Collapse/expand chevron — desktop only */}
+        {!isMobile && onToggleCollapse && (
+          <button
+            onClick={onToggleCollapse}
+            className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg transition-colors shrink-0"
+            style={{ color: 'var(--fg-faint)' }}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--glass-bg)')}
+            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+            title={col ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {col ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
+          </button>
         )}
       </div>
 
@@ -231,7 +245,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false })
 
   return (
     <>
-      {/* Mobile sidebar */}
+      {/* Mobile sidebar — z-50, slides in as drawer */}
       <aside
         className={`fixed inset-y-0 left-0 w-64 z-50 flex flex-col transform transition-transform duration-300 lg:hidden ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
@@ -247,15 +261,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false })
             <X size={20} />
           </button>
         </div>
-        <SidebarContent collapsed={false} />
+        <SidebarContent collapsed={false} isMobile={true} />
       </aside>
 
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar — z-[9] so it stays BELOW the main content wrapper (z-10),
+          which means modals inside the main content always render on top. */}
       <aside
-        className={`hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:flex-col lg:z-20 transition-[width] duration-300 ${collapsed ? 'lg:w-16' : 'lg:w-64'}`}
+        className={`hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:flex-col lg:z-[9] transition-[width] duration-300 ${collapsed ? 'lg:w-16' : 'lg:w-64'}`}
         style={sidebarStyle}
       >
-        <SidebarContent collapsed={collapsed} />
+        <SidebarContent collapsed={collapsed} isMobile={false} />
       </aside>
     </>
   );
