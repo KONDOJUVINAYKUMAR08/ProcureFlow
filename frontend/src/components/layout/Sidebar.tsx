@@ -21,6 +21,7 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronLeft,
+  Menu,
   Wallet,
 } from 'lucide-react';
 
@@ -148,29 +149,46 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, collapsed = false, o
 
   const SidebarContent: React.FC<{ collapsed?: boolean; isMobile?: boolean }> = ({ collapsed: col = false, isMobile = false }) => (
     <>
-      {/* Logo + collapse toggle */}
+      {/* Logo + toggle button — desktop only toggle */}
       <div
-        className={`flex items-center h-16 shrink-0 ${col ? 'justify-center px-2' : 'px-4 gap-2'}`}
+        className="flex items-center h-16 shrink-0 px-3 gap-2"
         style={{ borderBottom: '1px solid var(--glass-border)' }}
       >
-        <Hexagon size={22} style={{ color: 'var(--fg)' }} className="shrink-0" />
-        {!col && (
-          <span className="text-lg font-bold tracking-tight flex-1 truncate" style={{ color: 'var(--fg)' }}>
-            ProcureFlow
-          </span>
-        )}
-        {/* Collapse/expand chevron — desktop only */}
-        {!isMobile && onToggleCollapse && (
-          <button
-            onClick={onToggleCollapse}
-            className="hidden lg:flex items-center justify-center w-7 h-7 rounded-lg transition-colors shrink-0"
-            style={{ color: 'var(--fg-faint)' }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'var(--glass-bg)')}
-            onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-            title={col ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {col ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
-          </button>
+        <Hexagon size={20} style={{ color: 'var(--fg)' }} className="shrink-0" />
+
+        {col ? (
+          /* Collapsed: ≡ bars right next to the logo — click to expand */
+          !isMobile && onToggleCollapse && (
+            <button
+              onClick={onToggleCollapse}
+              className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg transition-all"
+              style={{ color: 'var(--fg-muted)', backgroundColor: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--glass-border)')}
+              title="Open sidebar"
+            >
+              <Menu size={15} />
+            </button>
+          )
+        ) : (
+          /* Expanded: logo text + ‹ chevron to collapse */
+          <>
+            <span className="text-base font-bold tracking-tight flex-1 truncate" style={{ color: 'var(--fg)' }}>
+              ProcureFlow
+            </span>
+            {!isMobile && onToggleCollapse && (
+              <button
+                onClick={onToggleCollapse}
+                className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg transition-all shrink-0"
+                style={{ color: 'var(--fg-muted)', backgroundColor: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--glass-border)')}
+                title="Close sidebar"
+              >
+                <ChevronLeft size={15} />
+              </button>
+            )}
+          </>
         )}
       </div>
 
